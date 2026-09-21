@@ -343,8 +343,8 @@ const GENRE_LABELS = {
 DATA.forEach(d=>{
   d.id = d.t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
   if(d.rec === undefined) d.rec = '';
-  d.watched = false;
-  d.starred = false;
+  d.watched = !!d.watched;
+  d.starred = !!d.starred;
 });
 
 const listEl = document.getElementById('list');
@@ -368,9 +368,11 @@ function loadState(){
   }
   DATA.forEach(d=>{
     if(state[d.id]){
-      d.watched = !!state[d.id].watched;
-      d.starred = !!state[d.id].starred;
-      d.rec = state[d.id].rec !== undefined ? state[d.id].rec : d.rec;
+      // Only override the fields this browser has actually touched, so a
+      // default baked into DATA survives until it's changed on this device.
+      if(state[d.id].watched !== undefined) d.watched = !!state[d.id].watched;
+      if(state[d.id].starred !== undefined) d.starred = !!state[d.id].starred;
+      if(state[d.id].rec !== undefined) d.rec = state[d.id].rec;
     }
   });
 }
